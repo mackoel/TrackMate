@@ -17,6 +17,10 @@
 	<description></description>
 
 	<properties>
+		<batik.groupId>org.apache.xmlgraphics</batik.groupId>
+		<batik.artifactId>batik-rasterizer</batik.artifactId>
+		<batik.version>1.7</batik.version>
+
 		<!-- Prevent the plugin from being copied to ./plugins/ by default -->
 		<imagej.app.directory>../fiji/</imagej.app.directory>
 	</properties>
@@ -38,8 +42,8 @@
 			<version>${jama.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik</artifactId>
+			<groupId>${batik.groupId}</groupId>
+			<artifactId>${batik.artifactId}</artifactId>
 			<version>${batik.version}</version>
 		</dependency>
 		<dependency>
