@@ -15,6 +15,7 @@ import com.mxgraph.view.mxGraph;
 
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.TrackModel;
 
 public class JGraphXAdapter extends mxGraph implements GraphListener< Spot, DefaultWeightedEdge >
 {
@@ -29,15 +30,26 @@ public class JGraphXAdapter extends mxGraph implements GraphListener< Spot, Defa
 
 	private final Model tmm;
 
+	private final int centralFrame;
+
+	private final int range;
+
 	/*
 	 * CONSTRUCTOR
 	 */
 
-	public JGraphXAdapter( final Model tmm )
+	public JGraphXAdapter( final Model tmm, final int centralFrame, final int range )
 	{
 		super();
 		this.tmm = tmm;
+		this.centralFrame = centralFrame;
+		this.range = range;
 		insertTrackCollection( tmm );
+	}
+
+	public JGraphXAdapter( final Model tmm )
+	{
+		this( tmm, 0, Integer.MAX_VALUE );
 	}
 
 	/*
@@ -220,18 +232,26 @@ public class JGraphXAdapter extends mxGraph implements GraphListener< Spot, Defa
 	private void insertTrackCollection( final Model tmm )
 	{
 		model.beginUpdate();
+		final TrackModel trackModel = tmm.getTrackModel();
 		try
 		{
 			for ( final Integer trackID : tmm.getTrackModel().trackIDs( true ) )
 			{
-
-				for ( final Spot vertex : tmm.getTrackModel().trackSpots( trackID ) )
+				for ( final DefaultWeightedEdge edge : trackModel.trackEdges( trackID ) )
 				{
-					addJGraphTVertex( vertex );
-				}
+					final Spot source = trackModel.getEdgeSource( edge );
+					final int sourceFrame = source.getFeature( Spot.FRAME ).intValue();
 
-				for ( final DefaultWeightedEdge edge : tmm.getTrackModel().trackEdges( trackID ) )
-				{
+					final Spot target = trackModel.getEdgeTarget( edge );
+					final int targetFrame = target.getFeature( Spot.FRAME ).intValue();
+
+					if ( Math.abs( sourceFrame - centralFrame ) > range || Math.abs( targetFrame - centralFrame ) > range )
+					{
+						continue;
+					}
+
+					addJGraphTVertex( source );
+					addJGraphTVertex( target );
 					addJGraphTEdge( edge );
 				}
 
