@@ -119,6 +119,10 @@ public class TrackSchemeStylist
 				final Set< mxCell > edgesToUpdate = edgeMap.get( trackID );
 				for ( final mxCell cell : edgesToUpdate )
 				{
+					if ( null == cell )
+					{
+						continue;
+					}
 
 					// The edge itself
 					final DefaultWeightedEdge edge = graphx.getEdgeFor( cell );

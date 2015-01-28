@@ -5,19 +5,6 @@ import static fiji.plugin.trackmate.visualization.trackscheme.TrackScheme.DEFAUL
 import static fiji.plugin.trackmate.visualization.trackscheme.TrackScheme.X_COLUMN_SIZE;
 import static fiji.plugin.trackmate.visualization.trackscheme.TrackScheme.Y_COLUMN_SIZE;
 
-import com.mxgraph.layout.mxGraphLayout;
-import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxGeometry;
-import com.mxgraph.model.mxICell;
-
-import fiji.plugin.trackmate.Model;
-import fiji.plugin.trackmate.Spot;
-import fiji.plugin.trackmate.graph.ConvexBranchesDecomposition;
-import fiji.plugin.trackmate.graph.ConvexBranchesDecomposition.TrackBranchDecomposition;
-import fiji.plugin.trackmate.graph.GraphUtils;
-import fiji.plugin.trackmate.graph.SortedDepthFirstIterator;
-import fiji.plugin.trackmate.graph.TimeDirectedNeighborIndex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +18,19 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
+
+import com.mxgraph.layout.mxGraphLayout;
+import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGeometry;
+import com.mxgraph.model.mxICell;
+
+import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.graph.ConvexBranchesDecomposition;
+import fiji.plugin.trackmate.graph.ConvexBranchesDecomposition.TrackBranchDecomposition;
+import fiji.plugin.trackmate.graph.GraphUtils;
+import fiji.plugin.trackmate.graph.SortedDepthFirstIterator;
+import fiji.plugin.trackmate.graph.TimeDirectedNeighborIndex;
 
 /**
  * This {@link mxGraphLayout} arranges cells on a graph in lanes corresponding
@@ -174,6 +174,10 @@ public class TrackSchemeGraphLayout extends mxGraphLayout implements Benchmark
 						// Get corresponding JGraphX cell, add it if it does not
 						// exist in the JGraphX yet
 						final mxICell cell = graph.getCellFor( spot );
+						if ( null == cell )
+						{
+							continue;
+						}
 
 						// This is cell is in a track, remove it from the list
 						// of lonely cells
@@ -233,9 +237,12 @@ public class TrackSchemeGraphLayout extends mxGraphLayout implements Benchmark
 						// Place spots.
 						for ( final Spot spot : branch )
 						{
-							// Get corresponding JGraphX cell, add it if it does
-							// not exist in the JGraphX yet
+							// Get corresponding JGraphX cell.
 							final mxICell cell = graph.getCellFor( spot );
+							if ( null == cell )
+							{
+								continue;
+							}
 
 							// This is cell is in a track, remove it from the
 							// list of lonely cells
