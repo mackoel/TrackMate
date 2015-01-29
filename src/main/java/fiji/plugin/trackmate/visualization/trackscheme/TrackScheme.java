@@ -243,11 +243,15 @@ public class TrackScheme extends AbstractTrackMateModelView
 		gui.logger.setStatus( "Creating graph adapter." );
 
 		final JGraphXAdapter graph;
-		if ( selectionModel.getSpotSelection().size() == 1 )
+		if ( selectionModel.getSpotSelection().size() == 1 && ( ( Integer ) displaySettings.get( TrackMateModelView.KEY_TRACK_DISPLAY_MODE ) != TrackMateModelView.TRACK_DISPLAY_MODE_WHOLE ) )
 		{
 			final Spot spot = selectionModel.getSpotSelection().iterator().next();
 			final int centralFrame = spot.getFeature( Spot.FRAME ).intValue();
 			final int range = ( Integer ) displaySettings.get( TrackMateModelView.KEY_TRACK_DISPLAY_DEPTH );
+
+			final String title = "TrackScheme displaying frames " + centralFrame + " ± " + range;
+			gui.setTitle( title );
+
 			graph = new JGraphXAdapter( model, centralFrame, range );
 		}
 		else
