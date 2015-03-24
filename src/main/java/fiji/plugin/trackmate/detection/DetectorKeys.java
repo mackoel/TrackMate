@@ -65,6 +65,18 @@ public class DetectorKeys
 
 	/** A default value for the {@link #KEY_THRESHOLD} parameter. */
 	public static final double DEFAULT_THRESHOLD = 0d;
+	/**
+	 * The key identifying the parameter that sets the folder
+	 * <p>
+	 * Currently used by:
+	 * <ul>
+	 * <li> {@link CSVDetector}
+	 * </ul>
+	 */
+	public static final String KEY_FOLDER = "FOLDER";
+
+	/** A default value for the {@link #KEY_FOLDER} parameter. */
+	public static final String DEFAULT_FOLDER = "~/CSVDETECTOR";
 
 	/**
 	 * The key identifying the parameter that sets the downsampling factor

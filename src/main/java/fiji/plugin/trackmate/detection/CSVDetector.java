@@ -38,7 +38,7 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 
 	protected double threshold;
         
-        protected File folder;
+        protected final String folder;
 
 	protected String baseErrorMessage;
 
@@ -99,20 +99,25 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	public boolean process()
 	{
             final long start = System.currentTimeMillis();
-            String fn = folder.getName() + "/frame_" + String.valueOf(frame) + ".csv";
-            try (BufferedReader br = new BufferedReader(new FileReader(fn))) {
+            String fn = folder + "/frame_" + String.valueOf(frame) + ".csv";
+            try 
+            {
+                BufferedReader br = new BufferedReader(new FileReader(fn));
                 String line;
                 while ((line = br.readLine()) != null) {
                     String[] data = line.split(",");
-                    double radius = Double.parseDouble(data[0]);
-                    double quality = Double.parseDouble(data[1]);
-                    double x = Double.parseDouble(data[3]);
-                    double y = Double.parseDouble(data[4]);
-                    double z = Double.parseDouble(data[5]);
+                    System.out.println(data);
+                    double radius = Double.parseDouble(data[1]);
+                    double quality = 1.0;
+                    double x = Double.parseDouble(data[5]);
+                    double y = Double.parseDouble(data[6]);
+                    double z = Double.parseDouble(data[7]);
                     final Spot spot = new Spot( x * calibration[ 0 ], y * calibration[ 1 ], z * calibration[ 2 ], radius * calibration[ 0 ], quality );
                     spots.add( spot );
                 }
-            } catch (Exception e) { System.out.println(e); };
+            } catch (Exception e) { 
+                e.printStackTrace(); 
+            }
             final long end = System.currentTimeMillis();
             this.processingTime = end - start;
             return true;

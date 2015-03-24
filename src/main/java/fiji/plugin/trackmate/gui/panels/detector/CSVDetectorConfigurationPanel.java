@@ -1,7 +1,6 @@
 package fiji.plugin.trackmate.gui.panels.detector;
 
-import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_DO_MEDIAN_FILTERING;
-import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_DO_SUBPIXEL_LOCALIZATION;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_FOLDER;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_RADIUS;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_TARGET_CHANNEL;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_THRESHOLD;
@@ -91,6 +90,10 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 
 	protected final String infoText;
 
+        protected JLabel labelFolder;
+
+	protected JTextField infoFolder;
+        
 	protected final String spaceUnits;
 
 	protected final String detectorName;
@@ -146,9 +149,11 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 		final int targetChannel = sliderChannel.getValue();
 		final double expectedRadius = NumberParser.parseDouble( jTextFieldBlobDiameter.getText() ) / 2;
 		final double threshold = NumberParser.parseDouble( jTextFieldThreshold.getText() );
+                final String folder = infoFolder.getText();
 		settings.put( KEY_TARGET_CHANNEL, targetChannel );
 		settings.put( KEY_RADIUS, expectedRadius );
 		settings.put( KEY_THRESHOLD, threshold );
+                settings.put( KEY_FOLDER, folder );
 		return settings;
 	}
 
@@ -174,6 +179,7 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 		}
 		jTextFieldBlobDiameter.setText( "" + ( 2 * radius ) );
 		jTextFieldThreshold.setText( "" + settings.get( KEY_THRESHOLD ) );
+                infoFolder.setText( "" + settings.get( KEY_FOLDER ));
 	}
 
 	/**
@@ -324,6 +330,16 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 				jLabelBlobDiameterUnit.setText( spaceUnits );
 			}
 			{
+				infoFolder = new JTextField();
+				layout.putConstraint( SpringLayout.NORTH, infoFolder, 312, SpringLayout.NORTH, this );
+				layout.putConstraint( SpringLayout.WEST, infoFolder, 11, SpringLayout.WEST, this );
+				layout.putConstraint( SpringLayout.SOUTH, infoFolder, 333, SpringLayout.NORTH, this );
+				layout.putConstraint( SpringLayout.EAST, infoFolder, 241, SpringLayout.WEST, this );
+				this.add( infoFolder );
+				infoFolder.setText( "Folder " );
+				infoFolder.setFont( FONT );
+			}
+			{
 				jLabelHelpText = new JLabel();
 				layout.putConstraint( SpringLayout.NORTH, jLabelHelpText, 60, SpringLayout.NORTH, this );
 				layout.putConstraint( SpringLayout.WEST, jLabelHelpText, 10, SpringLayout.WEST, this );
@@ -332,6 +348,16 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 				this.add( jLabelHelpText );
 				jLabelHelpText.setFont( FONT.deriveFont( Font.ITALIC ) );
 				jLabelHelpText.setText( infoText.replace( "<br>", "" ).replace( "<p>", "<p align=\"justify\">" ).replace( "<html>", "<html><p align=\"justify\">" ) );
+			}
+			{
+				jLabelThreshold = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelThreshold, -42, SpringLayout.NORTH, infoFolder );
+				layout.putConstraint( SpringLayout.WEST, jLabelThreshold, 16, SpringLayout.WEST, this );
+				layout.putConstraint( SpringLayout.SOUTH, jLabelThreshold, -29, SpringLayout.NORTH, infoFolder );
+				layout.putConstraint( SpringLayout.EAST, jLabelThreshold, 168, SpringLayout.WEST, this );
+				this.add( jLabelThreshold );
+				jLabelThreshold.setText( "Threshold:" );
+				jLabelThreshold.setFont( FONT );
 			}
 			{
 				jTextFieldThreshold = new JNumericTextField();
