@@ -90,7 +90,8 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		final double radius = ( Double ) settings.get( KEY_RADIUS );
 		final double threshold = ( Double ) settings.get( KEY_THRESHOLD );
 		final double[] calibration = TMUtils.getSpatialCalibration( img );
-		RandomAccessible< T > imFrame;
+                final String folder = ( String ) settings.get( KEY_FOLDER );
+                RandomAccessible< T > imFrame;
 		final int cDim = TMUtils.findCAxisIndex( img );
 		if ( cDim < 0 )
 		{
@@ -125,7 +126,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 			imFrame = Views.hyperSlice( imFrame, 1, 0 );
 		}
 
-		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, radius, threshold );
+		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, radius, threshold, frame, folder );
 		detector.setNumThreads( 1 );
 		return detector;
 	}
@@ -150,10 +151,12 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		ok = ok & checkParameter( settings, KEY_TARGET_CHANNEL, Integer.class, errorHolder );
 		ok = ok & checkParameter( settings, KEY_RADIUS, Double.class, errorHolder );
 		ok = ok & checkParameter( settings, KEY_THRESHOLD, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_FOLDER, String.class, errorHolder );
 		final List< String > mandatoryKeys = new ArrayList< String >();
 		mandatoryKeys.add( KEY_TARGET_CHANNEL );
 		mandatoryKeys.add( KEY_RADIUS );
 		mandatoryKeys.add( KEY_THRESHOLD );
+                mandatoryKeys.add( KEY_FOLDER );
 		ok = ok & checkMapKeys( settings, mandatoryKeys, null, errorHolder );
 		if ( !ok )
 		{
@@ -183,6 +186,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		ok = ok & readDoubleAttribute( element, settings, KEY_RADIUS, errorHolder );
 		ok = ok & readDoubleAttribute( element, settings, KEY_THRESHOLD, errorHolder );
 		ok = ok & readIntegerAttribute( element, settings, KEY_TARGET_CHANNEL, errorHolder );
+		ok = ok & readIntegerAttribute( element, settings, KEY_FOLDER, errorHolder );
 		if ( !ok )
 		{
 			errorMessage = errorHolder.toString();
@@ -216,6 +220,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		settings.put( KEY_TARGET_CHANNEL, DEFAULT_TARGET_CHANNEL );
 		settings.put( KEY_RADIUS, DEFAULT_RADIUS );
 		settings.put( KEY_THRESHOLD, DEFAULT_THRESHOLD );
+		settings.put( KEY_FOLDER, DEFAULT_FOLDER );
 		return settings;
 	}
 

@@ -18,6 +18,10 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import fiji.plugin.trackmate.Spot;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 public class CSVDetector< T extends RealType< T > & NativeType< T >> implements SpotDetector< T >, MultiThreaded
 {
 
@@ -33,6 +37,8 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	protected double radius;
 
 	protected double threshold;
+        
+        protected File folder;
 
 	protected String baseErrorMessage;
 
@@ -49,12 +55,14 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	protected final Interval interval;
 
 	protected final double[] calibration;
-
+/** The frame we operate in. */
+        private final int frame;
+ 
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold )
+	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold, final int frame, final String folder )
 	{
 		this.img = img;
 		this.interval = DetectionUtils.squeeze( interval );
@@ -62,6 +70,8 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 		this.radius = radius;
 		this.threshold = threshold;
 		this.baseErrorMessage = BASE_ERROR_MESSAGE;
+                this.frame = frame;
+                this.folder = folder;
 		setNumThreads();
 	}
 
@@ -88,14 +98,24 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	@Override
 	public boolean process()
 	{
-		final long start = System.currentTimeMillis();
-
-//                spots = DetectionUtils.findLocalMaxima( to, threshold, calibration, radius, doSubPixelLocalization, numThreads );
-
-		final long end = System.currentTimeMillis();
-		this.processingTime = end - start;
-
-		return true;
+            final long start = System.currentTimeMillis();
+            String fn = folder.getName() + "/frame_" + String.valueOf(frame) + ".csv";
+            try (BufferedReader br = new BufferedReader(new FileReader(fn))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(",");
+                    double radius = Double.parseDouble(data[0]);
+                    double quality = Double.parseDouble(data[1]);
+                    double x = Double.parseDouble(data[3]);
+                    double y = Double.parseDouble(data[4]);
+                    double z = Double.parseDouble(data[5]);
+                    final Spot spot = new Spot( x * calibration[ 0 ], y * calibration[ 1 ], z * calibration[ 2 ], radius * calibration[ 0 ], quality );
+                    spots.add( spot );
+                }
+            } catch (Exception e) { System.out.println(e); };
+            final long end = System.currentTimeMillis();
+            this.processingTime = end - start;
+            return true;
 	}
 
 	@Override
