@@ -58,7 +58,7 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 /** The frame we operate in. */
         private final int frame;
         
-        private int timeDim;
+        private final int timeDim;
  
 	/*
 	 * CONSTRUCTORS
@@ -105,25 +105,44 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 
             String fn1 = folder + "/frame_";
             String fn;
-            if ( timeDim < 10)
+            if ( timeDim <= 10 )
             {
                 fn = fn1 + String.valueOf(frame) + ".csv";
-            } else if ( timeDim < 100)
+            } else if ( timeDim <= 100 && frame < 10 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim < 1000)
+            } else if ( timeDim <= 1000 && frame < 10 )
             {
                 fn = fn1 + "00" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim < 10000)
+            } else if ( timeDim <= 1000 && frame < 100 )
             {
-                fn = fn1 + String.valueOf(frame) + ".csv";
-            } else if ( timeDim < 100000)
+                fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 10000 && frame < 10 )
             {
                 fn = fn1 + "000" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 10000 && frame < 100 )
+            {
+                fn = fn1 + "00" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 10000 && frame < 1000 )
+            {
+                fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 100000 && frame < 10 )
+            {
+                fn = fn1 + "0000" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 100000 && frame < 100 )
+            {
+                fn = fn1 + "000" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 100000 && frame < 1000 )
+            {
+                fn = fn1 + "00" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim <= 100000 && frame < 10000 )
+            {
+                fn = fn1 + "0" + String.valueOf(frame) + ".csv";
             } else
             {
                 fn = fn1 + String.valueOf(frame) + ".csv";
             }
+            System.out.println("frame:" + String.valueOf(frame) + " " + fn);
             int done = 0;
             try 
             {
