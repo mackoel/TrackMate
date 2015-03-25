@@ -123,7 +123,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		{ // Single line image
 			imFrame = Views.hyperSlice( imFrame, 1, 0 );
 		}
-                final int dimT = (int)( img.dimension( timeDim ) );
+                final long dimT = img.dimension( timeDim );
 		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, radius, threshold, frame, folder, dimT);
 		detector.setNumThreads( 1 );
 		return detector;

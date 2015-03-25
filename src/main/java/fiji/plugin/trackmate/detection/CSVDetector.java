@@ -58,13 +58,13 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 /** The frame we operate in. */
         private final int frame;
         
-        private final int timeDim;
+        private final long dimT;
  
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold, final int frame, final String folder, int timeDim )
+	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold, final int frame, final String folder, final long dimT )
 	{
 		this.img = img;
 		this.interval = DetectionUtils.squeeze( interval );
@@ -74,7 +74,7 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 		this.baseErrorMessage = BASE_ERROR_MESSAGE;
                 this.frame = frame;
                 this.folder = folder;
-                this.timeDim = timeDim;
+                this.dimT = dimT;
 		setNumThreads();
 	}
 
@@ -105,37 +105,37 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 
             String fn1 = folder + "/frame_";
             String fn;
-            if ( timeDim <= 10 )
+            if ( dimT <= 10 )
             {
                 fn = fn1 + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 100 && frame < 10 )
+            } else if ( dimT <= 100 && frame < 10 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 1000 && frame < 10 )
+            } else if ( dimT <= 1000 && frame < 10 )
             {
                 fn = fn1 + "00" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 1000 && frame < 100 )
+            } else if ( dimT <= 1000 && frame < 100 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 10000 && frame < 10 )
+            } else if ( dimT <= 10000 && frame < 10 )
             {
                 fn = fn1 + "000" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 10000 && frame < 100 )
+            } else if ( dimT <= 10000 && frame < 100 )
             {
                 fn = fn1 + "00" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 10000 && frame < 1000 )
+            } else if ( dimT <= 10000 && frame < 1000 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 100000 && frame < 10 )
+            } else if ( dimT <= 100000 && frame < 10 )
             {
                 fn = fn1 + "0000" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 100000 && frame < 100 )
+            } else if ( dimT <= 100000 && frame < 100 )
             {
                 fn = fn1 + "000" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 100000 && frame < 1000 )
+            } else if ( dimT <= 100000 && frame < 1000 )
             {
                 fn = fn1 + "00" + String.valueOf(frame) + ".csv";
-            } else if ( timeDim <= 100000 && frame < 10000 )
+            } else if ( dimT <= 100000 && frame < 10000 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
             } else
