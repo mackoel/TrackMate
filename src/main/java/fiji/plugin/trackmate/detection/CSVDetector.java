@@ -57,12 +57,14 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	protected final double[] calibration;
 /** The frame we operate in. */
         private final int frame;
+        
+        private int timeDim;
  
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold, final int frame, final String folder )
+	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold, final int frame, final String folder, int timeDim )
 	{
 		this.img = img;
 		this.interval = DetectionUtils.squeeze( interval );
@@ -72,6 +74,7 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 		this.baseErrorMessage = BASE_ERROR_MESSAGE;
                 this.frame = frame;
                 this.folder = folder;
+                this.timeDim = timeDim;
 		setNumThreads();
 	}
 
@@ -99,7 +102,28 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	public boolean process()
 	{
             final long start = System.currentTimeMillis();
-            String fn = folder + "/frame_" + String.valueOf(frame) + ".csv";
+
+            String fn1 = folder + "/frame_";
+            String fn;
+            if ( timeDim < 10)
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
+            } else if ( timeDim < 100)
+            {
+                fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim < 1000)
+            {
+                fn = fn1 + "00" + String.valueOf(frame) + ".csv";
+            } else if ( timeDim < 10000)
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
+            } else if ( timeDim < 100000)
+            {
+                fn = fn1 + "000" + String.valueOf(frame) + ".csv";
+            } else
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
+            }
             int done = 0;
             try 
             {

@@ -124,7 +124,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 			imFrame = Views.hyperSlice( imFrame, 1, 0 );
 		}
 
-		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, radius, threshold, frame, folder );
+		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, radius, threshold, frame, folder, timeDim );
 		detector.setNumThreads( 1 );
 		return detector;
 	}
