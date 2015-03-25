@@ -111,12 +111,18 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
             } else if ( dimT <= 100 && frame < 10 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( dimT <= 100 && frame >= 10 )
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
             } else if ( dimT <= 1000 && frame < 10 )
             {
                 fn = fn1 + "00" + String.valueOf(frame) + ".csv";
             } else if ( dimT <= 1000 && frame < 100 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( dimT <= 1000 && frame >= 100 )
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
             } else if ( dimT <= 10000 && frame < 10 )
             {
                 fn = fn1 + "000" + String.valueOf(frame) + ".csv";
@@ -126,6 +132,9 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
             } else if ( dimT <= 10000 && frame < 1000 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( dimT <= 10000 && frame >= 1000 )
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
             } else if ( dimT <= 100000 && frame < 10 )
             {
                 fn = fn1 + "0000" + String.valueOf(frame) + ".csv";
@@ -138,6 +147,9 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
             } else if ( dimT <= 100000 && frame < 10000 )
             {
                 fn = fn1 + "0" + String.valueOf(frame) + ".csv";
+            } else if ( dimT <= 100000 && frame >= 10000 )
+            {
+                fn = fn1 + String.valueOf(frame) + ".csv";
             } else
             {
                 fn = fn1 + String.valueOf(frame) + ".csv";
