@@ -100,19 +100,24 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	{
             final long start = System.currentTimeMillis();
             String fn = folder + "/frame_" + String.valueOf(frame) + ".csv";
+            int done = 0;
             try 
             {
                 BufferedReader br = new BufferedReader(new FileReader(fn));
                 String line;
+                line = br.readLine();
                 while ((line = br.readLine()) != null) {
                     String[] data = line.split(",");
-                    System.out.println(data);
-                    double radius = Double.parseDouble(data[1]);
-                    double quality = 1.0;
+                    double radius = Math.sqrt(Double.parseDouble(data[1])/Math.PI); // if it is a circle
+                    double quality = Double.parseDouble(data[38]); //mean intensity
                     double x = Double.parseDouble(data[5]);
                     double y = Double.parseDouble(data[6]);
                     double z = Double.parseDouble(data[7]);
                     final Spot spot = new Spot( x * calibration[ 0 ], y * calibration[ 1 ], z * calibration[ 2 ], radius * calibration[ 0 ], quality );
+                    if (done == 0) {
+                        System.out.println("frame:" + String.valueOf(frame) + " " + spot.echo());
+                        done = 1;
+                    }
                     spots.add( spot );
                 }
             } catch (Exception e) { 
