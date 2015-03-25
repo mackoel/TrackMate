@@ -160,15 +160,15 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
             {
                 BufferedReader br = new BufferedReader(new FileReader(fn));
                 String line;
-                line = br.readLine();
+                line = br.readLine();// skip header
                 while ((line = br.readLine()) != null) {
                     String[] data = line.split(",");
-                    double radius = Math.sqrt(Double.parseDouble(data[1])/Math.PI); // if it is a circle
+                    double spot_radius = Math.sqrt(Double.parseDouble(data[1])/Math.PI); // if it is a circle
                     double quality = Double.parseDouble(data[38]); //mean intensity
                     double x = Double.parseDouble(data[5]);
                     double y = Double.parseDouble(data[6]);
                     double z = Double.parseDouble(data[7]);
-                    final Spot spot = new Spot( x * calibration[ 0 ], y * calibration[ 1 ], z * calibration[ 2 ], radius * calibration[ 0 ], quality );
+                    final Spot spot = new Spot( x * calibration[ 0 ], y * calibration[ 1 ], z * calibration[ 2 ], spot_radius * calibration[ 0 ], quality );
                     if (done == 0) {
                         System.out.println("frame:" + String.valueOf(frame) + " " + spot.echo());
                         done = 1;
