@@ -1,9 +1,17 @@
 package fiji.plugin.trackmate.gui.panels.detector;
 
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_FOLDER;
-import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_RADIUS;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_TARGET_CHANNEL;
-import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_THRESHOLD;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_XCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_YCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ZCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ACOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ICOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_XCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_YCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ZCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ACOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ICOLUMN;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.BIG_FONT;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.FONT;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.SMALL_FONT;
@@ -53,33 +61,33 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String TOOLTIP_PREVIEW = "<html>" + "Preview the current settings on the current frame." + "<p>" + "Advice: change the settings until you get at least <br>" + "<b>all</b> the spots you want, and do not mind the <br>" + "spurious spots too much. You will get a chance to <br>" + "get rid of them later." + "</html>";
-
-	private static final String TOOLTIP_REFRESH = "<html>" + "Will read the threshold from the current <br>" + "ImagePlus and use its value here.</html>";
-
-	private static final ImageIcon ICON_REFRESH = new ImageIcon( TrackMateGUIController.class.getResource( "images/arrow_refresh_small.png" ) );
-
-	private static final ImageIcon ICON_PREVIEW = new ImageIcon( TrackMateGUIController.class.getResource( "images/flag_checked.png" ) );
-
 	private JLabel jLabel1;
 
 	protected JLabel jLabelSegmenterName;
 
-	private JLabel jLabel2;
-
-	protected JButton jButtonRefresh;
-
-	protected JButton btnPreview;
-
-	protected JTextField jTextFieldThreshold;
-
-	protected JLabel jLabelThreshold;
+	protected JButton btnSelect;
 
 	protected JLabel jLabelHelpText;
 
-	protected JLabel jLabelBlobDiameterUnit;
+	protected JLabel jLabelXcolumn;
 
-	protected JTextField jTextFieldBlobDiameter;
+	protected JLabel jLabelYcolumn;
+
+	protected JLabel jLabelZcolumn;
+
+	protected JLabel jLabelAcolumn;
+
+	protected JLabel jLabelIcolumn;
+
+	protected JTextField jTextFieldXcolumn;
+
+	protected JTextField jTextFieldYcolumn;
+
+	protected JTextField jTextFieldZcolumn;
+
+	protected JTextField jTextFieldAcolumn;
+
+	protected JTextField jTextFieldIcolumn;
 
 	/** The HTML text that will be displayed as a help. */
 	protected JLabel lblSegmentInChannel;
@@ -93,8 +101,6 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
         protected JLabel labelFolder;
 
 	protected JTextField infoFolder;
-        
-	protected final String spaceUnits;
 
 	protected final String detectorName;
 
@@ -134,7 +140,6 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 		this.infoText = infoText;
 		this.detectorName = detectorName;
 		this.model = model;
-		this.spaceUnits = model.getSpaceUnits();
 		initGUI();
 	}
 
@@ -147,12 +152,18 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 	{
 		final HashMap< String, Object > settings = new HashMap< String, Object >( 5 );
 		final int targetChannel = sliderChannel.getValue();
-		final double expectedRadius = NumberParser.parseDouble( jTextFieldBlobDiameter.getText() ) / 2;
-		final double threshold = NumberParser.parseDouble( jTextFieldThreshold.getText() );
+		final int xcolumn = NumberParser.parseInt( jTextFieldXcolumn.getText() );
+		final int ycolumn = NumberParser.parseInt( jTextFieldYcolumn.getText() );
+		final int zcolumn = NumberParser.parseInt( jTextFieldZcolumn.getText() );
+		final int acolumn = NumberParser.parseInt( jTextFieldAcolumn.getText() );
+		final int icolumn = NumberParser.parseInt( jTextFieldIcolumn.getText() );
                 final String folder = infoFolder.getText();
 		settings.put( KEY_TARGET_CHANNEL, targetChannel );
-		settings.put( KEY_RADIUS, expectedRadius );
-		settings.put( KEY_THRESHOLD, threshold );
+		settings.put( KEY_XCOLUMN, xcolumn );
+		settings.put( KEY_YCOLUMN, ycolumn );
+		settings.put( KEY_ZCOLUMN, zcolumn );
+		settings.put( KEY_ACOLUMN, acolumn );
+		settings.put( KEY_ICOLUMN, icolumn );
                 settings.put( KEY_FOLDER, folder );
 		return settings;
 	}
@@ -161,24 +172,11 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 	public void setSettings( final Map< String, Object > settings )
 	{
 		sliderChannel.setValue( ( Integer ) settings.get( KEY_TARGET_CHANNEL ) );
-		double radius = ( Double ) settings.get( KEY_RADIUS );
-		if ( imp != null )
-		{
-			final Calibration calibration = imp.getCalibration();
-			// Not too large
-			final double maxWidth = imp.getWidth() * 0.5 * ( calibration == null ? 1 : calibration.pixelWidth );
-			final double maxHeight = imp.getHeight() * 0.5 * ( calibration == null ? 1 : calibration.pixelHeight );
-			final double max = maxWidth < maxHeight ? maxWidth : maxHeight;
-			if ( radius > max )
-			{
-				radius *= max * 4 / ( imp.getWidth() + imp.getHeight() );
-			}
-			// Not too small
-			final double pw = calibration == null ? 1 : calibration.pixelWidth;
-			radius = Math.max( radius / pw, 1.5 ) * pw;
-		}
-		jTextFieldBlobDiameter.setText( "" + ( 2 * radius ) );
-		jTextFieldThreshold.setText( "" + settings.get( KEY_THRESHOLD ) );
+		jTextFieldXcolumn.setText( "" + settings.get( KEY_XCOLUMN ) );
+		jTextFieldYcolumn.setText( "" + settings.get( KEY_YCOLUMN ) );
+		jTextFieldZcolumn.setText( "" + settings.get( KEY_ZCOLUMN ) );
+		jTextFieldAcolumn.setText( "" + settings.get( KEY_ACOLUMN ) );
+		jTextFieldIcolumn.setText( "" + settings.get( KEY_ICOLUMN ) );
                 infoFolder.setText( "" + settings.get( KEY_FOLDER ));
 	}
 
@@ -199,78 +197,6 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 	/*
 	 * PRIVATE METHODS
 	 */
-
-	/**
-	 * Launch detection on the current frame.
-	 */
-	private void preview()
-	{
-		btnPreview.setEnabled( false );
-		new Thread( "TrackMate preview detection thread" )
-		{
-			@Override
-			public void run()
-			{
-				final Settings settings = new Settings();
-				settings.setFrom( imp );
-				final int frame = imp.getFrame() - 1;
-				settings.tstart = frame;
-				settings.tend = frame;
-
-				settings.detectorFactory = getDetectorFactory();
-				settings.detectorSettings = getSettings();
-
-				final TrackMate trackmate = new TrackMate( settings );
-				trackmate.getModel().setLogger( localLogger );
-
-				final boolean detectionOk = trackmate.execDetection();
-				if ( !detectionOk )
-				{
-					localLogger.error( trackmate.getErrorMessage() );
-					return;
-				}
-				localLogger.log( "Found " + trackmate.getModel().getSpots().getNSpots( false ) + " spots." );
-
-				// Wrap new spots in a list.
-				final SpotCollection newspots = trackmate.getModel().getSpots();
-				final Iterator< Spot > it = newspots.iterator( frame, false );
-				final ArrayList< Spot > spotsToCopy = new ArrayList< Spot >( newspots.getNSpots( frame, false ) );
-				while ( it.hasNext() )
-				{
-					spotsToCopy.add( it.next() );
-				}
-				// Pass new spot list to model.
-				model.getSpots().put( frame, spotsToCopy );
-				// Make them visible
-				for ( final Spot spot : spotsToCopy )
-				{
-					spot.putFeature( SpotCollection.VISIBLITY, SpotCollection.ONE );
-				}
-				// Generate event for listener to reflect changes.
-				model.setSpots( model.getSpots(), true );
-
-				btnPreview.setEnabled( true );
-
-			};
-		}.start();
-	}
-
-	/**
-	 * Fill the text fields with parameters grabbed from stored ImagePlus.
-	 */
-	private void refresh()
-	{
-		if ( null == imp ) {
-			return;
-		}
-		double threshold = imp.getProcessor().getMinThreshold();
-		if ( threshold < 0 )
-		{
-			threshold = 0;
-		}
-		jTextFieldThreshold.setText( String.format( "%.0f", threshold ) );
-		sliderChannel.setValue( imp.getC() );
-	}
 
 	protected void initGUI()
 	{
@@ -298,37 +224,116 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 				jLabelSegmenterName.setText( detectorName );
 			}
 			{
-				jLabel2 = new JLabel();
-				layout.putConstraint( SpringLayout.NORTH, jLabel2, 247, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, jLabel2, 16, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.EAST, jLabel2, -16, SpringLayout.EAST, this );
-				this.add( jLabel2 );
-				jLabel2.setText( "Estimated blob diameter:" );
-				jLabel2.setFont( FONT );
+				jLabelHelpText = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelHelpText, 60, SpringLayout.SOUTH, jLabelSegmenterName );
+				layout.putConstraint( SpringLayout.WEST, jLabelHelpText, 10, SpringLayout.WEST, this );
+				layout.putConstraint( SpringLayout.EAST, jLabelHelpText, -10, SpringLayout.EAST, this );
+				this.add( jLabelHelpText );
+				jLabelHelpText.setFont( FONT.deriveFont( Font.ITALIC ) );
+				jLabelHelpText.setText( infoText.replace( "<br>", "" ).replace( "<p>", "<p align=\"justify\">" ).replace( "<html>", "<html><p align=\"justify\">" ) );
+			}
+/* X column */
+			{
+				jLabelXcolumn = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelXcolumn, 10, SpringLayout.NORTH, jLabelHelpText );
+				layout.putConstraint( SpringLayout.WEST, jLabelXcolumn, 16, SpringLayout.WEST, this );
+				this.add( jLabelXcolumn );
+				jLabelXcolumn.setText( "X column:" );
+				jLabelXcolumn.setFont( FONT );
 
 			}
 			{
-				jTextFieldBlobDiameter = new JNumericTextField();
-				layout.putConstraint( SpringLayout.NORTH, jTextFieldBlobDiameter, 247, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, jTextFieldBlobDiameter, 168, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, jTextFieldBlobDiameter, 263, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, jTextFieldBlobDiameter, 208, SpringLayout.WEST, this );
-				jTextFieldBlobDiameter.setHorizontalAlignment( SwingConstants.CENTER );
-				jTextFieldBlobDiameter.setColumns( 5 );
-				jTextFieldBlobDiameter.setText( "5" );
-				this.add( jTextFieldBlobDiameter );
-				jTextFieldBlobDiameter.setFont( FONT );
+				jTextFieldXcolumn = new JNumericTextField();
+				layout.putConstraint( SpringLayout.NORTH, jTextFieldXcolumn, 10, SpringLayout.SOUTH, jLabelSegmenterName );
+				layout.putConstraint( SpringLayout.WEST, jTextFieldXcolumn, 16, SpringLayout.EAST, jLabelXcolumn );
+				jTextFieldXcolumn.setHorizontalAlignment( SwingConstants.CENTER );
+				jTextFieldXcolumn.setColumns( 5 );
+				jTextFieldXcolumn.setText( "5" );
+				this.add( jTextFieldXcolumn );
+				jTextFieldXcolumn.setFont( FONT );
+			}
+
+/* Y column */
+			{
+				jLabelYcolumn = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelYcolumn, 10, SpringLayout.SOUTH, jLabelXcolumn );
+				layout.putConstraint( SpringLayout.WEST, jLabelYcolumn, 16, SpringLayout.WEST, this );
+				this.add( jLabelYcolumn );
+				jLabelYcolumn.setText( "Y column:" );
+				jLabelYcolumn.setFont( FONT );
+
 			}
 			{
-				jLabelBlobDiameterUnit = new JLabel();
-				layout.putConstraint( SpringLayout.NORTH, jLabelBlobDiameterUnit, 245, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, jLabelBlobDiameterUnit, 228, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, jLabelBlobDiameterUnit, 262, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, jLabelBlobDiameterUnit, 268, SpringLayout.WEST, this );
-				this.add( jLabelBlobDiameterUnit );
-				jLabelBlobDiameterUnit.setFont( FONT );
-				jLabelBlobDiameterUnit.setText( spaceUnits );
+				jTextFieldYcolumn = new JNumericTextField();
+				layout.putConstraint( SpringLayout.NORTH, jTextFieldYcolumn, 10, SpringLayout.SOUTH, jTextFieldXcolumn );
+				layout.putConstraint( SpringLayout.WEST, jTextFieldYcolumn, 16, SpringLayout.EAST, jLabelXcolumn );
+				jTextFieldYcolumn.setHorizontalAlignment( SwingConstants.CENTER );
+				jTextFieldYcolumn.setColumns( 5 );
+				jTextFieldYcolumn.setText( "5" );
+				this.add( jTextFieldYcolumn );
+				jTextFieldYcolumn.setFont( FONT );
 			}
+/* Z column */
+			{
+				jLabelZcolumn = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelZcolumn, 10, SpringLayout.SOUTH, jLabelYcolumn );
+				layout.putConstraint( SpringLayout.WEST, jLabelZcolumn, 16, SpringLayout.WEST, this );
+				this.add( jLabelZcolumn );
+				jLabelZcolumn.setText( "Z column:" );
+				jLabelZcolumn.setFont( FONT );
+
+			}
+			{
+				jTextFieldZcolumn = new JNumericTextField();
+				layout.putConstraint( SpringLayout.NORTH, jTextFieldZcolumn, 10, SpringLayout.SOUTH, jTextFieldYcolumn );
+				layout.putConstraint( SpringLayout.WEST, jTextFieldZcolumn, 16, SpringLayout.EAST, jLabelZcolumn );
+				jTextFieldZcolumn.setHorizontalAlignment( SwingConstants.CENTER );
+				jTextFieldZcolumn.setColumns( 5 );
+				jTextFieldZcolumn.setText( "5" );
+				this.add( jTextFieldZcolumn );
+				jTextFieldZcolumn.setFont( FONT );
+			}
+/* A column */
+			{
+				jLabelAcolumn = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelAcolumn, 10, SpringLayout.SOUTH, jLabelZcolumn );
+				layout.putConstraint( SpringLayout.WEST, jLabelAcolumn, 16, SpringLayout.WEST, this );
+				this.add( jLabelAcolumn );
+				jLabelAcolumn.setText( "Area column:" );
+				jLabelAcolumn.setFont( FONT );
+
+			}
+			{
+				jTextFieldAcolumn = new JNumericTextField();
+				layout.putConstraint( SpringLayout.NORTH, jTextFieldAcolumn, 10, SpringLayout.SOUTH, jTextFieldZcolumn );
+				layout.putConstraint( SpringLayout.WEST, jTextFieldAcolumn, 16, SpringLayout.EAST, jLabelAcolumn );
+				jTextFieldAcolumn.setHorizontalAlignment( SwingConstants.CENTER );
+				jTextFieldAcolumn.setColumns( 5 );
+				jTextFieldAcolumn.setText( "5" );
+				this.add( jTextFieldAcolumn );
+				jTextFieldAcolumn.setFont( FONT );
+			}
+/* I column */
+			{
+				jLabelIcolumn = new JLabel();
+				layout.putConstraint( SpringLayout.NORTH, jLabelIcolumn, 10, SpringLayout.SOUTH, jLabelAcolumn );
+				layout.putConstraint( SpringLayout.WEST, jLabelIcolumn, 16, SpringLayout.WEST, this );
+				this.add( jLabelIcolumn );
+				jLabelIcolumn.setText( "Intensity column:" );
+				jLabelIcolumn.setFont( FONT );
+
+			}
+			{
+				jTextFieldIcolumn = new JNumericTextField();
+				layout.putConstraint( SpringLayout.NORTH, jTextFieldIcolumn, 10, SpringLayout.SOUTH, jTextFieldAcolumn );
+				layout.putConstraint( SpringLayout.WEST, jTextFieldIcolumn, 16, SpringLayout.EAST, jLabelIcolumn );
+				jTextFieldIcolumn.setHorizontalAlignment( SwingConstants.CENTER );
+				jTextFieldIcolumn.setColumns( 5 );
+				jTextFieldIcolumn.setText( "5" );
+				this.add( jTextFieldIcolumn );
+				jTextFieldIcolumn.setFont( FONT );
+			}
+/* Folder */
 			{
 				infoFolder = new JTextField();
 				layout.putConstraint( SpringLayout.NORTH, infoFolder, 312, SpringLayout.NORTH, this );
@@ -338,37 +343,6 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 				this.add( infoFolder );
 				infoFolder.setText( "Folder " );
 				infoFolder.setFont( FONT );
-			}
-			{
-				jLabelHelpText = new JLabel();
-				layout.putConstraint( SpringLayout.NORTH, jLabelHelpText, 60, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, jLabelHelpText, 10, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, jLabelHelpText, 164, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, jLabelHelpText, -10, SpringLayout.EAST, this );
-				this.add( jLabelHelpText );
-				jLabelHelpText.setFont( FONT.deriveFont( Font.ITALIC ) );
-				jLabelHelpText.setText( infoText.replace( "<br>", "" ).replace( "<p>", "<p align=\"justify\">" ).replace( "<html>", "<html><p align=\"justify\">" ) );
-			}
-			{
-				jLabelThreshold = new JLabel();
-				layout.putConstraint( SpringLayout.NORTH, jLabelThreshold, -42, SpringLayout.NORTH, infoFolder );
-				layout.putConstraint( SpringLayout.WEST, jLabelThreshold, 16, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, jLabelThreshold, -29, SpringLayout.NORTH, infoFolder );
-				layout.putConstraint( SpringLayout.EAST, jLabelThreshold, 168, SpringLayout.WEST, this );
-				this.add( jLabelThreshold );
-				jLabelThreshold.setText( "Threshold:" );
-				jLabelThreshold.setFont( FONT );
-			}
-			{
-				jTextFieldThreshold = new JNumericTextField();
-				layout.putConstraint( SpringLayout.NORTH, jTextFieldThreshold, 268, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, jTextFieldThreshold, 168, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, jTextFieldThreshold, 284, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, jTextFieldThreshold, 208, SpringLayout.WEST, this );
-				jTextFieldThreshold.setHorizontalAlignment( SwingConstants.CENTER );
-				jTextFieldThreshold.setText( "0" );
-				this.add( jTextFieldThreshold );
-				jTextFieldThreshold.setFont( FONT );
 			}
 			{
 				lblSegmentInChannel = new JLabel( "Segment in channel:" );

@@ -1,18 +1,28 @@
 package fiji.plugin.trackmate.detection;
 
 import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_FOLDER;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_RADIUS;
 import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_TARGET_CHANNEL;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_THRESHOLD;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_XCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_YCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ZCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ACOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ICOLUMN;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_FOLDER;
-import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_RADIUS;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_TARGET_CHANNEL;
-import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_THRESHOLD;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_XCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_YCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ZCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ACOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ICOLUMN;
 import static fiji.plugin.trackmate.io.IOUtils.readDoubleAttribute;
 import static fiji.plugin.trackmate.io.IOUtils.readIntegerAttribute;
-import static fiji.plugin.trackmate.io.IOUtils.writeRadius;
 import static fiji.plugin.trackmate.io.IOUtils.writeTargetChannel;
-import static fiji.plugin.trackmate.io.IOUtils.writeThreshold;
+import static fiji.plugin.trackmate.io.IOUtils.writeXcolumn;
+import static fiji.plugin.trackmate.io.IOUtils.writeYcolumn;
+import static fiji.plugin.trackmate.io.IOUtils.writeZcolumn;
+import static fiji.plugin.trackmate.io.IOUtils.writeAcolumn;
+import static fiji.plugin.trackmate.io.IOUtils.writeIcolumn;
+import static fiji.plugin.trackmate.io.IOUtils.writeFolder;
 import static fiji.plugin.trackmate.util.TMUtils.checkMapKeys;
 import static fiji.plugin.trackmate.util.TMUtils.checkParameter;
 
@@ -82,8 +92,11 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 	@Override
 	public SpotDetector< T > getDetector( final Interval interval, final int frame )
 	{
-		final double radius = ( Double ) settings.get( KEY_RADIUS );
-		final double threshold = ( Double ) settings.get( KEY_THRESHOLD );
+		final int xcolumn = ( Integer ) settings.get( KEY_XCOLUMN );
+		final int ycolumn = ( Integer ) settings.get( KEY_YCOLUMN );
+		final int zcolumn = ( Integer ) settings.get( KEY_ZCOLUMN );
+		final int acolumn = ( Integer ) settings.get( KEY_ACOLUMN );
+		final int icolumn = ( Integer ) settings.get( KEY_ICOLUMN );
 		final double[] calibration = TMUtils.getSpatialCalibration( img );
                 final String folder = ( String ) settings.get( KEY_FOLDER );
                 RandomAccessible< T > imFrame;
@@ -121,7 +134,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 			imFrame = Views.hyperSlice( imFrame, 1, 0 );
 		}
                 final long dimT = img.dimension( timeDim );
-		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, radius, threshold, frame, folder, dimT);
+		final CSVDetector< T > detector = new CSVDetector< T >( imFrame, interval, calibration, frame, xcolumn, ycolumn, zcolumn, acolumn, icolumn, folder, dimT);
 		detector.setNumThreads( 1 );
 		return detector;
 	}
@@ -144,13 +157,19 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		boolean ok = true;
 		final StringBuilder errorHolder = new StringBuilder();
 		ok = ok & checkParameter( settings, KEY_TARGET_CHANNEL, Integer.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_RADIUS, Double.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_THRESHOLD, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_XCOLUMN, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_YCOLUMN, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_ZCOLUMN, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_ACOLUMN, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_ICOLUMN, Double.class, errorHolder );
 		ok = ok & checkParameter( settings, KEY_FOLDER, String.class, errorHolder );
 		final List< String > mandatoryKeys = new ArrayList< String >();
 		mandatoryKeys.add( KEY_TARGET_CHANNEL );
-		mandatoryKeys.add( KEY_RADIUS );
-		mandatoryKeys.add( KEY_THRESHOLD );
+		mandatoryKeys.add( KEY_XCOLUMN );
+		mandatoryKeys.add( KEY_YCOLUMN );
+		mandatoryKeys.add( KEY_ZCOLUMN );
+		mandatoryKeys.add( KEY_ACOLUMN );
+		mandatoryKeys.add( KEY_ICOLUMN );
                 mandatoryKeys.add( KEY_FOLDER );
 		ok = ok & checkMapKeys( settings, mandatoryKeys, null, errorHolder );
 		if ( !ok )
@@ -164,7 +183,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 	public boolean marshall( final Map< String, Object > settings, final Element element )
 	{
 		final StringBuilder errorHolder = new StringBuilder();
-		final boolean ok = writeTargetChannel( settings, element, errorHolder ) && writeRadius( settings, element, errorHolder ) && writeThreshold( settings, element, errorHolder );
+		final boolean ok = writeTargetChannel( settings, element, errorHolder ) && writeXcolumn( settings, element, errorHolder ) && writeYcolumn( settings, element, errorHolder ) && writeZcolumn( settings, element, errorHolder ) && writeAcolumn( settings, element, errorHolder ) && writeIcolumn( settings, element, errorHolder ) && writeFolder( settings, element, errorHolder );
 		if ( !ok )
 		{
 			errorMessage = errorHolder.toString();
@@ -178,8 +197,11 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		settings.clear();
 		final StringBuilder errorHolder = new StringBuilder();
 		boolean ok = true;
-		ok = ok & readDoubleAttribute( element, settings, KEY_RADIUS, errorHolder );
-		ok = ok & readDoubleAttribute( element, settings, KEY_THRESHOLD, errorHolder );
+		ok = ok & readIntegerAttribute( element, settings, KEY_XCOLUMN, errorHolder );
+		ok = ok & readIntegerAttribute( element, settings, KEY_YCOLUMN, errorHolder );
+		ok = ok & readIntegerAttribute( element, settings, KEY_ZCOLUMN, errorHolder );
+		ok = ok & readIntegerAttribute( element, settings, KEY_ACOLUMN, errorHolder );
+		ok = ok & readIntegerAttribute( element, settings, KEY_ICOLUMN, errorHolder );
 		ok = ok & readIntegerAttribute( element, settings, KEY_TARGET_CHANNEL, errorHolder );
 		ok = ok & readIntegerAttribute( element, settings, KEY_FOLDER, errorHolder );
 		if ( !ok )
@@ -213,8 +235,11 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 	{
 		final Map< String, Object > settings = new HashMap< String, Object >();
 		settings.put( KEY_TARGET_CHANNEL, DEFAULT_TARGET_CHANNEL );
-		settings.put( KEY_RADIUS, DEFAULT_RADIUS );
-		settings.put( KEY_THRESHOLD, DEFAULT_THRESHOLD );
+		settings.put( KEY_XCOLUMN, DEFAULT_XCOLUMN );
+		settings.put( KEY_YCOLUMN, DEFAULT_YCOLUMN );
+		settings.put( KEY_ZCOLUMN, DEFAULT_ZCOLUMN );
+		settings.put( KEY_ACOLUMN, DEFAULT_ACOLUMN );
+		settings.put( KEY_ICOLUMN, DEFAULT_ICOLUMN );
 		settings.put( KEY_FOLDER, DEFAULT_FOLDER );
 		return settings;
 	}

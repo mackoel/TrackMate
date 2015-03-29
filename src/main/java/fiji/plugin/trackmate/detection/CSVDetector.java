@@ -34,10 +34,6 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	/** The image to segment. Will not modified. */
 	protected RandomAccessible< T > img;
 
-	protected double radius;
-
-	protected double threshold;
-        
         protected final String folder;
 
 	protected String baseErrorMessage;
@@ -57,20 +53,33 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
 	protected final double[] calibration;
 /** The frame we operate in. */
         private final int frame;
-        
+
+        private final int xcolumn;
+
+        private final int ycolumn;
+
+        private final int zcolumn;
+
+        private final int icolumn;
+
+        private final int acolumn;
+
         private final long dimT;
  
 	/*
 	 * CONSTRUCTORS
 	 */
 
-	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final double radius, final double threshold, final int frame, final String folder, final long dimT )
+	public CSVDetector( final RandomAccessible< T > img, final Interval interval, final double[] calibration, final int frame, final int xcolumn, final int ycolumn, final int zcolumn, final int acolumn, final int icolumn, final String folder, final long dimT )
 	{
 		this.img = img;
 		this.interval = DetectionUtils.squeeze( interval );
 		this.calibration = calibration;
-		this.radius = radius;
-		this.threshold = threshold;
+		this.xcolumn = xcolumn;
+		this.ycolumn = ycolumn;
+		this.zcolumn = zcolumn;
+		this.acolumn = acolumn;
+		this.icolumn = icolumn;
 		this.baseErrorMessage = BASE_ERROR_MESSAGE;
                 this.frame = frame;
                 this.folder = folder;
@@ -163,11 +172,11 @@ public class CSVDetector< T extends RealType< T > & NativeType< T >> implements 
                 line = br.readLine();// skip header
                 while ((line = br.readLine()) != null) {
                     String[] data = line.split(",");
-                    double spot_radius = Math.sqrt(Double.parseDouble(data[1])/Math.PI); // if it is a circle
-                    double quality = Double.parseDouble(data[38]); //mean intensity
-                    double x = Double.parseDouble(data[5]);
-                    double y = Double.parseDouble(data[6]);
-                    double z = Double.parseDouble(data[7]);
+                    double spot_radius = Math.sqrt(Double.parseDouble(data[acolumn])/Math.PI); // if it is a circle
+                    double quality = Double.parseDouble(data[icolumn]); //mean intensity
+                    double x = Double.parseDouble(data[xcolumn]);
+                    double y = Double.parseDouble(data[ycolumn]);
+                    double z = Double.parseDouble(data[zcolumn]);
                     final Spot spot = new Spot( x * calibration[ 0 ], y * calibration[ 1 ], z * calibration[ 2 ], spot_radius * calibration[ 0 ], quality );
                     if (done == 0) {
                         System.out.println("frame:" + String.valueOf(frame) + " " + spot.echo());

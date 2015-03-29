@@ -79,6 +79,71 @@ public class DetectorKeys
 	public static final String DEFAULT_FOLDER = "~/CSVDETECTOR";
 
 	/**
+	 * The key identifying the parameter that sets the x column
+	 * <p>
+	 * Currently used by:
+	 * <ul>
+	 * <li> {@link CSVDetector}
+	 * </ul>
+	 */
+	public static final String KEY_XCOLUMN = "XCOLUMN";
+
+	/** A default value for the {@link #KEY_XCOLUMN} parameter. */
+	public static final int DEFAULT_XCOLUMN = 5;
+
+	/**
+	 * The key identifying the parameter that sets the y column
+	 * <p>
+	 * Currently used by:
+	 * <ul>
+	 * <li> {@link CSVDetector}
+	 * </ul>
+	 */
+	public static final String KEY_YCOLUMN = "YCOLUMN";
+
+	/** A default value for the {@link #KEY_YCOLUMN} parameter. */
+	public static final int DEFAULT_YCOLUMN = 6;
+
+	/**
+	 * The key identifying the parameter that sets the z column
+	 * <p>
+	 * Currently used by:
+	 * <ul>
+	 * <li> {@link CSVDetector}
+	 * </ul>
+	 */
+	public static final String KEY_ZCOLUMN = "ZCOLUMN";
+
+	/** A default value for the {@link #KEY_ZCOLUMN} parameter. */
+	public static final int DEFAULT_ZCOLUMN = 7;
+
+	/**
+	 * The key identifying the parameter that sets the area column
+	 * <p>
+	 * Currently used by:
+	 * <ul>
+	 * <li> {@link CSVDetector}
+	 * </ul>
+	 */
+	public static final String KEY_ACOLUMN = "ACOLUMN";
+
+	/** A default value for the {@link #KEY_ACOLUMN} parameter. */
+	public static final int DEFAULT_ACOLUMN = 1;
+
+	/**
+	 * The key identifying the parameter that sets the intensity column
+	 * <p>
+	 * Currently used by:
+	 * <ul>
+	 * <li> {@link CSVDetector}
+	 * </ul>
+	 */
+	public static final String KEY_ICOLUMN = "ICOLUMN";
+
+	/** A default value for the {@link #KEY_ICOLUMN} parameter. */
+	public static final int DEFAULT_ICOLUMN = 38;
+
+	/**
 	 * The key identifying the parameter that sets the downsampling factor
 	 * applied to the source image prior to segmentation. Expected values are
 	 * {@link Integer}s greater than 1.

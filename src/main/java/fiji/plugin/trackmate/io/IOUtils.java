@@ -6,6 +6,12 @@ import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_DO_SUBPIXEL_LOCAL
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_RADIUS;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_TARGET_CHANNEL;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_THRESHOLD;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_XCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_YCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ZCOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ACOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ICOLUMN;
+import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_FOLDER;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.TRACKMATE_ICON;
 import fiji.plugin.trackmate.Logger;
 import fiji.util.NumberParser;
@@ -430,6 +436,35 @@ public class IOUtils {
 		return writeAttribute( settings, element, KEY_DOWNSAMPLE_FACTOR, Integer.class, errorHolder );
 	}
 
+	public static final boolean writeXcolumn( final Map< String, Object > settings, final Element element, final StringBuilder errorHolder )
+	{
+		return writeAttribute( settings, element, KEY_XCOLUMN, Integer.class, errorHolder );
+	}
+
+	public static final boolean writeYcolumn( final Map< String, Object > settings, final Element element, final StringBuilder errorHolder )
+	{
+		return writeAttribute( settings, element, KEY_YCOLUMN, Integer.class, errorHolder );
+	}
+
+	public static final boolean writeZcolumn( final Map< String, Object > settings, final Element element, final StringBuilder errorHolder )
+	{
+		return writeAttribute( settings, element, KEY_ZCOLUMN, Integer.class, errorHolder );
+	}
+
+	public static final boolean writeAcolumn( final Map< String, Object > settings, final Element element, final StringBuilder errorHolder )
+	{
+		return writeAttribute( settings, element, KEY_ACOLUMN, Integer.class, errorHolder );
+	}
+
+	public static final boolean writeIcolumn( final Map< String, Object > settings, final Element element, final StringBuilder errorHolder )
+	{
+		return writeAttribute( settings, element, KEY_ICOLUMN, Integer.class, errorHolder );
+	}
+
+	public static final boolean writeFolder( final Map< String, Object > settings, final Element element, final StringBuilder errorHolder )
+	{
+		return writeAttribute( settings, element, KEY_FOLDER, String.class, errorHolder );
+	}
 	/**
 	 * Add a parameter attribute to the given element, taken from the given
 	 * settings map. Basic checks are made to ensure that the parameter value
