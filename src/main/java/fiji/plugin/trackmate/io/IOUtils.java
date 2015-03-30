@@ -373,6 +373,26 @@ public class IOUtils {
 		return true;
 	}
 
+        public static final boolean readStringAttribute( final Element element, final Map< String, Object > settings, final String parameterKey, final StringBuilder errorHolder )
+	{
+		final String str = element.getAttributeValue( parameterKey );
+		if ( null == str )
+		{
+			errorHolder.append( "Attribute " + parameterKey + " could not be found in XML element.\n" );
+			return false;
+		}
+		try
+		{
+			settings.put( parameterKey, str );
+		}
+		catch ( final NumberFormatException nfe )
+		{
+			errorHolder.append( "Could not read " + parameterKey + " attribute as a String value. Got " + str + "." );
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Unmarshall the attributes of a JDom element in a map of doubles. Mappings
 	 * are <b>added</b> to the specified map. If a value is found not to be a

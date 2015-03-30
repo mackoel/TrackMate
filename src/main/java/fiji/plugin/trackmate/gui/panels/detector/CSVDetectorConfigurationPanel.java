@@ -209,7 +209,7 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 			}
 			{
 				jLabelSegmenterName = new JLabel();
-				layout.putConstraint( SpringLayout.NORTH, jLabelSegmenterName, 33, SpringLayout.NORTH, this );
+				layout.putConstraint( SpringLayout.NORTH, jLabelSegmenterName, 10, SpringLayout.SOUTH, jLabel1 );
 				layout.putConstraint( SpringLayout.WEST, jLabelSegmenterName, 11, SpringLayout.WEST, this );
 				layout.putConstraint( SpringLayout.EAST, jLabelSegmenterName, -11, SpringLayout.EAST, this );
 				this.add( jLabelSegmenterName );
@@ -228,7 +228,7 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 /* X column */
 			{
 				jLabelXcolumn = new JLabel();
-				layout.putConstraint( SpringLayout.NORTH, jLabelXcolumn, 10, SpringLayout.NORTH, jLabelHelpText );
+				layout.putConstraint( SpringLayout.NORTH, jLabelXcolumn, 10, SpringLayout.SOUTH, jLabelHelpText );
 				layout.putConstraint( SpringLayout.WEST, jLabelXcolumn, 16, SpringLayout.WEST, this );
 				this.add( jLabelXcolumn );
 				jLabelXcolumn.setText( "X column:" );
@@ -237,7 +237,7 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 			}
 			{
 				jTextFieldXcolumn = new JNumericTextField();
-				layout.putConstraint( SpringLayout.NORTH, jTextFieldXcolumn, 10, SpringLayout.SOUTH, jLabelSegmenterName );
+				layout.putConstraint( SpringLayout.NORTH, jTextFieldXcolumn, 10, SpringLayout.SOUTH, jLabelHelpText );
 				layout.putConstraint( SpringLayout.WEST, jTextFieldXcolumn, 16, SpringLayout.EAST, jLabelXcolumn );
 				jTextFieldXcolumn.setHorizontalAlignment( SwingConstants.CENTER );
 				jTextFieldXcolumn.setColumns( 5 );
@@ -344,7 +344,7 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 				add( lblSegmentInChannel );
 
 				sliderChannel = new JSlider();
-				layout.putConstraint( SpringLayout.NORTH, sliderChannel, 10, SpringLayout.NORTH, infoFolder );
+				layout.putConstraint( SpringLayout.NORTH, sliderChannel, 10, SpringLayout.SOUTH, infoFolder );
 				layout.putConstraint( SpringLayout.WEST, sliderChannel, 16, SpringLayout.EAST, lblSegmentInChannel );
 				sliderChannel.addChangeListener( new ChangeListener()
 				{
@@ -365,8 +365,8 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 			}
 			{
 				btnSelect = new JButton( "Select directory with frames" );
-				layout.putConstraint( SpringLayout.NORTH, btnSelect, 10, SpringLayout.NORTH, labelChannel );
-				layout.putConstraint( SpringLayout.WEST, btnSelect, -141, SpringLayout.EAST, this );
+				layout.putConstraint( SpringLayout.NORTH, btnSelect, 10, SpringLayout.SOUTH, labelChannel );
+				layout.putConstraint( SpringLayout.WEST, btnSelect, 16, SpringLayout.WEST, this );
 				this.add( btnSelect );
 				btnSelect.setFont( SMALL_FONT );
 				btnSelect.addActionListener( new ActionListener()
@@ -419,7 +419,7 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 	 */
 
         /**
-	 * Fill the text fields with parameters grabbed from stored ImagePlus.
+	 * Fill the text field for directory.
 	 */
 	private void select()
 	{
@@ -430,7 +430,8 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
                     selectedFolder = askForFolder( file, "Select directory with frames", null, localLogger );
                     if ( selectedFolder != null )
                     {
-                        infoFolder.setText( selectedFolder.getCanonicalPath() );
+                        final String folder = selectedFolder.getCanonicalPath();
+                        infoFolder.setText( folder );
                     }
                 } catch (Exception e) { 
                     e.printStackTrace(); 

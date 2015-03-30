@@ -16,6 +16,7 @@ import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ACOLUMN;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ICOLUMN;
 import static fiji.plugin.trackmate.io.IOUtils.readDoubleAttribute;
 import static fiji.plugin.trackmate.io.IOUtils.readIntegerAttribute;
+import static fiji.plugin.trackmate.io.IOUtils.readStringAttribute;
 import static fiji.plugin.trackmate.io.IOUtils.writeTargetChannel;
 import static fiji.plugin.trackmate.io.IOUtils.writeXcolumn;
 import static fiji.plugin.trackmate.io.IOUtils.writeYcolumn;
@@ -157,11 +158,11 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		boolean ok = true;
 		final StringBuilder errorHolder = new StringBuilder();
 		ok = ok & checkParameter( settings, KEY_TARGET_CHANNEL, Integer.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_XCOLUMN, Double.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_YCOLUMN, Double.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_ZCOLUMN, Double.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_ACOLUMN, Double.class, errorHolder );
-		ok = ok & checkParameter( settings, KEY_ICOLUMN, Double.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_XCOLUMN, Integer.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_YCOLUMN, Integer.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_ZCOLUMN, Integer.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_ACOLUMN, Integer.class, errorHolder );
+		ok = ok & checkParameter( settings, KEY_ICOLUMN, Integer.class, errorHolder );
 		ok = ok & checkParameter( settings, KEY_FOLDER, String.class, errorHolder );
 		final List< String > mandatoryKeys = new ArrayList< String >();
 		mandatoryKeys.add( KEY_TARGET_CHANNEL );
@@ -203,7 +204,7 @@ public class CSVDetectorFactory< T extends RealType< T > & NativeType< T >> impl
 		ok = ok & readIntegerAttribute( element, settings, KEY_ACOLUMN, errorHolder );
 		ok = ok & readIntegerAttribute( element, settings, KEY_ICOLUMN, errorHolder );
 		ok = ok & readIntegerAttribute( element, settings, KEY_TARGET_CHANNEL, errorHolder );
-		ok = ok & readIntegerAttribute( element, settings, KEY_FOLDER, errorHolder );
+		ok = ok & readStringAttribute( element, settings, KEY_FOLDER, errorHolder );
 		if ( !ok )
 		{
 			errorMessage = errorHolder.toString();
