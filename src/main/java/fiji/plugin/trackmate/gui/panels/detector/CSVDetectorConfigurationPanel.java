@@ -7,14 +7,10 @@ import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_YCOLUMN;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ZCOLUMN;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ACOLUMN;
 import static fiji.plugin.trackmate.detection.DetectorKeys.KEY_ICOLUMN;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_XCOLUMN;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_YCOLUMN;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ZCOLUMN;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ACOLUMN;
-import static fiji.plugin.trackmate.detection.DetectorKeys.DEFAULT_ICOLUMN;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.BIG_FONT;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.FONT;
 import static fiji.plugin.trackmate.gui.TrackMateWizard.SMALL_FONT;
+import static fiji.plugin.trackmate.io.IOUtils.askForFolder;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 
@@ -39,17 +35,14 @@ import javax.swing.event.ChangeListener;
 
 import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Model;
-import fiji.plugin.trackmate.Settings;
-import fiji.plugin.trackmate.Spot;
-import fiji.plugin.trackmate.SpotCollection;
-import fiji.plugin.trackmate.TrackMate;
 import fiji.plugin.trackmate.detection.CSVDetectorFactory;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
 import fiji.plugin.trackmate.gui.ConfigurationPanel;
-import fiji.plugin.trackmate.gui.TrackMateGUIController;
 import fiji.plugin.trackmate.gui.panels.components.JNumericTextField;
 import fiji.plugin.trackmate.util.JLabelLogger;
 import fiji.util.NumberParser;
+import java.awt.Frame;
+import java.io.File;
 
 /**
  * Configuration panel for spot detectors based on LoG detector.
@@ -152,11 +145,11 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 	{
 		final HashMap< String, Object > settings = new HashMap< String, Object >( 5 );
 		final int targetChannel = sliderChannel.getValue();
-		final int xcolumn = NumberParser.parseInt( jTextFieldXcolumn.getText() );
-		final int ycolumn = NumberParser.parseInt( jTextFieldYcolumn.getText() );
-		final int zcolumn = NumberParser.parseInt( jTextFieldZcolumn.getText() );
-		final int acolumn = NumberParser.parseInt( jTextFieldAcolumn.getText() );
-		final int icolumn = NumberParser.parseInt( jTextFieldIcolumn.getText() );
+		final int xcolumn = NumberParser.parseInteger( jTextFieldXcolumn.getText() );
+		final int ycolumn = NumberParser.parseInteger( jTextFieldYcolumn.getText() );
+		final int zcolumn = NumberParser.parseInteger( jTextFieldZcolumn.getText() );
+		final int acolumn = NumberParser.parseInteger( jTextFieldAcolumn.getText() );
+		final int icolumn = NumberParser.parseInteger( jTextFieldIcolumn.getText() );
                 final String folder = infoFolder.getText();
 		settings.put( KEY_TARGET_CHANNEL, targetChannel );
 		settings.put( KEY_XCOLUMN, xcolumn );
@@ -336,9 +329,8 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 /* Folder */
 			{
 				infoFolder = new JTextField();
-				layout.putConstraint( SpringLayout.NORTH, infoFolder, 312, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, infoFolder, 11, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, infoFolder, 333, SpringLayout.NORTH, this );
+				layout.putConstraint( SpringLayout.NORTH, infoFolder, 10, SpringLayout.SOUTH, jLabelIcolumn );
+				layout.putConstraint( SpringLayout.WEST, infoFolder, 16, SpringLayout.WEST, this );
 				layout.putConstraint( SpringLayout.EAST, infoFolder, 241, SpringLayout.WEST, this );
 				this.add( infoFolder );
 				infoFolder.setText( "Folder " );
@@ -346,17 +338,14 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 			}
 			{
 				lblSegmentInChannel = new JLabel( "Segment in channel:" );
-				layout.putConstraint( SpringLayout.NORTH, lblSegmentInChannel, 219, SpringLayout.NORTH, this );
+				layout.putConstraint( SpringLayout.NORTH, lblSegmentInChannel, 10, SpringLayout.SOUTH, infoFolder );
 				layout.putConstraint( SpringLayout.WEST, lblSegmentInChannel, 16, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.EAST, lblSegmentInChannel, 116, SpringLayout.WEST, this );
 				lblSegmentInChannel.setFont( SMALL_FONT );
 				add( lblSegmentInChannel );
 
 				sliderChannel = new JSlider();
-				layout.putConstraint( SpringLayout.NORTH, sliderChannel, 213, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, sliderChannel, 126, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, sliderChannel, 236, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, sliderChannel, 217, SpringLayout.WEST, this );
+				layout.putConstraint( SpringLayout.NORTH, sliderChannel, 10, SpringLayout.NORTH, infoFolder );
+				layout.putConstraint( SpringLayout.WEST, sliderChannel, 16, SpringLayout.EAST, lblSegmentInChannel );
 				sliderChannel.addChangeListener( new ChangeListener()
 				{
 					@Override
@@ -368,51 +357,27 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 				add( sliderChannel );
 
 				labelChannel = new JLabel( "1" );
-				layout.putConstraint( SpringLayout.NORTH, labelChannel, 216, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, labelChannel, 228, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, labelChannel, 234, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, labelChannel, 249, SpringLayout.WEST, this );
+				layout.putConstraint( SpringLayout.NORTH, labelChannel, 10, SpringLayout.SOUTH, sliderChannel );
+				layout.putConstraint( SpringLayout.WEST, labelChannel, 16, SpringLayout.WEST, this );
 				labelChannel.setHorizontalAlignment( SwingConstants.CENTER );
 				labelChannel.setFont( SMALL_FONT );
 				add( labelChannel );
 			}
 			{
-				jButtonRefresh = new JButton( "Refresh treshold", ICON_REFRESH );
-				layout.putConstraint( SpringLayout.NORTH, jButtonRefresh, 370, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, jButtonRefresh, 11, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, jButtonRefresh, 395, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, jButtonRefresh, 131, SpringLayout.WEST, this );
-				// this.add( jButtonRefresh );
-				jButtonRefresh.setToolTipText( TOOLTIP_REFRESH );
-				jButtonRefresh.setFont( SMALL_FONT );
-				jButtonRefresh.addActionListener( new ActionListener()
+				btnSelect = new JButton( "Select directory with frames" );
+				layout.putConstraint( SpringLayout.NORTH, btnSelect, 10, SpringLayout.NORTH, labelChannel );
+				layout.putConstraint( SpringLayout.WEST, btnSelect, -141, SpringLayout.EAST, this );
+				this.add( btnSelect );
+				btnSelect.setFont( SMALL_FONT );
+				btnSelect.addActionListener( new ActionListener()
 				{
 					@Override
 					public void actionPerformed( final ActionEvent e )
 					{
-						refresh();
+						select();
 					}
 				} );
 			}
-			{
-				btnPreview = new JButton( "Preview", ICON_PREVIEW );
-				layout.putConstraint( SpringLayout.NORTH, btnPreview, 370, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, btnPreview, -141, SpringLayout.EAST, this );
-				layout.putConstraint( SpringLayout.SOUTH, btnPreview, 395, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, btnPreview, -10, SpringLayout.EAST, this );
-				btnPreview.setToolTipText( TOOLTIP_PREVIEW );
-				this.add( btnPreview );
-				btnPreview.setFont( SMALL_FONT );
-				btnPreview.addActionListener( new ActionListener()
-				{
-					@Override
-					public void actionPerformed( final ActionEvent e )
-					{
-						preview();
-					}
-				} );
-			}
-
 			{
 
 				// Deal with channels: the slider and channel labels are only
@@ -437,10 +402,8 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 			}
 			{
 				final JLabelLogger labelLogger = new JLabelLogger();
-				layout.putConstraint( SpringLayout.NORTH, labelLogger, 407, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.WEST, labelLogger, 10, SpringLayout.WEST, this );
-				layout.putConstraint( SpringLayout.SOUTH, labelLogger, 431, SpringLayout.NORTH, this );
-				layout.putConstraint( SpringLayout.EAST, labelLogger, -10, SpringLayout.EAST, this );
+				layout.putConstraint( SpringLayout.NORTH, labelLogger, 10, SpringLayout.SOUTH, btnSelect );
+				layout.putConstraint( SpringLayout.WEST, labelLogger, 16, SpringLayout.WEST, this );
 				add( labelLogger );
 				localLogger = labelLogger.getLogger();
 			}
@@ -449,5 +412,28 @@ public class CSVDetectorConfigurationPanel extends ConfigurationPanel
 		{
 			e.printStackTrace();
 		}
+	}
+
+        /*
+	 * PRIVATE METHODS
+	 */
+
+        /**
+	 * Fill the text fields with parameters grabbed from stored ImagePlus.
+	 */
+	private void select()
+	{
+                File file;
+                File selectedFolder = null;
+                try {
+                    file = new File(System.getProperty("user.dir"));
+                    selectedFolder = askForFolder( file, "Select directory with frames", null, localLogger );
+                    if ( selectedFolder != null )
+                    {
+                        infoFolder.setText( selectedFolder.getCanonicalPath() );
+                    }
+                } catch (Exception e) { 
+                    e.printStackTrace(); 
+                }
 	}
 }
